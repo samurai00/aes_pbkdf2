@@ -40,20 +40,29 @@ const int KEY_LENGTH = 32;
 @implementation AESCrypt
 
 + (NSString *)encrypt:(NSString *)message password:(NSString *)password {
-    NSString *salt = [PBKDF2 rand_str:SALT_LEN];
-    NSData *derivedKey = [PBKDF2 pbkdf2:password salt:salt count:ITERATIONS kLen:KEY_LENGTH withAlgo:kSHA512];
-    NSData *encryptedData = [[message dataUsingEncoding:NSUTF8StringEncoding] AES256EncryptedDataUsingKey:derivedKey error:nil];
-    NSString *base64EncodedString = [encryptedData base64EncodedStringWithWrapWidth:[encryptedData length]];
-    NSString *data = [NSString stringWithFormat:@"%@%@", salt, base64EncodedString];
-    return data;
+    return [self encryptData:[message dataUsingEncoding:NSUTF8StringEncoding] password:password];
 }
 
 + (NSString *)decrypt:(NSString *)base64EncodedString password:(NSString *)password {
+    NSData *decryptedData = [self decryptData:base64EncodedString password:password];
+    return [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding];
+}
+
++ (NSString *)encryptData:(NSData *)data password:(NSString *)password {
+    NSString *salt = [PBKDF2 rand_str:SALT_LEN];
+    NSData *derivedKey = [PBKDF2 pbkdf2:password salt:salt count:ITERATIONS kLen:KEY_LENGTH withAlgo:kSHA512];
+    NSData *encryptedData = [data AES256EncryptedDataUsingKey:derivedKey error:nil];
+    NSString *base64EncodedString = [encryptedData base64EncodedStringWithWrapWidth:[encryptedData length]];
+    NSString *mixedData = [NSString stringWithFormat:@"%@%@", salt, base64EncodedString];
+    return mixedData;
+}
+
++ (NSData *)decryptData:(NSString *)base64EncodedString password:(NSString *)password {
     NSString *salt = [base64EncodedString substringToIndex:SALT_LEN];
     NSData *encryptedData = [NSData dataWithBase64EncodedString:[base64EncodedString substringFromIndex:SALT_LEN]];
     NSData *derivedKey = [PBKDF2 pbkdf2:password salt:salt count:ITERATIONS kLen:KEY_LENGTH withAlgo:kSHA512];
     NSData *decryptedData = [encryptedData decryptedAES256DataUsingKey:derivedKey error:nil];
-    return [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding];
+    return decryptedData;
 }
 
 @end

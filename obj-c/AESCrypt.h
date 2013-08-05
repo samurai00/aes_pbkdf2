@@ -2,7 +2,7 @@
 //  AESCrypt.h
 //  Gurpartap Singh
 //
-//  Created by Gurpartap Singh on 06/05/12.
+//  Created by Gurpartap Singh on 06/05/12. (Edited by afon on 13-8-5.)
 //  Copyright (c) 2012 Gurpartap Singh
 // 
 // 	MIT License
@@ -33,5 +33,8 @@
 
 + (NSString *)encrypt:(NSString *)message password:(NSString *)password;
 + (NSString *)decrypt:(NSString *)base64EncodedString password:(NSString *)password;
+
++ (NSString *)encryptData:(NSData *)data password:(NSString *)password;
++ (NSData *)decryptData:(NSString *)base64EncodedString password:(NSString *)password;
 
 @end
