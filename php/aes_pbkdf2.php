@@ -5,7 +5,7 @@
 const SALT_LEN = 32;
 const ITERATIONS = 10000;
 const KEY_LENGTH = 32;
-const KET_ALGO = "sha512";
+const KEY_ALGO = "sha512";
 
 function rand_str($length) {
     $s = 'abcdefghijklmnokprstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -26,7 +26,7 @@ function aes_encrypt($data, $password) {
     $salt = rand_str(SALT_LEN);
     $encrypted = mcrypt_encrypt(
         MCRYPT_RIJNDAEL_128,
-        hash_pbkdf2(KET_ALGO, $password, $salt, ITERATIONS, KEY_LENGTH, true),
+        hash_pbkdf2(KEY_ALGO, $password, $salt, ITERATIONS, KEY_LENGTH, true),
         $data,
         MCRYPT_MODE_CBC,
         "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
@@ -39,7 +39,7 @@ function aes_decrypt($data, $password) {
     $data = substr($data, SALT_LEN);
     $decrypted = mcrypt_decrypt(
         MCRYPT_RIJNDAEL_128,
-        hash_pbkdf2(KET_ALGO, $password, $salt, ITERATIONS, KEY_LENGTH, true),
+        hash_pbkdf2(KEY_ALGO, $password, $salt, ITERATIONS, KEY_LENGTH, true),
         base64_decode($data),
         MCRYPT_MODE_CBC,
         "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
