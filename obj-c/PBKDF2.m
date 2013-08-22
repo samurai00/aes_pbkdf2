@@ -63,7 +63,7 @@ const int DEFAULT_SALT_LENGTH = 20;
 {
     NSArray *p = [h componentsSeparatedByString:@":"];
     NSString *salt_hash = [p objectAtIndex:3];
-    int salt_len = [salt_hash length] - (int)ceil([[p objectAtIndex:2] doubleValue]/3) * 4;
+    unsigned long salt_len = [salt_hash length] - (unsigned long)ceil([[p objectAtIndex:2] doubleValue]/3) * 4;
     NSString *encoded_hash = [[self pbkdf2:password salt:[salt_hash substringToIndex: salt_len] count:[[p objectAtIndex:1] intValue]*1000 kLen:[[p objectAtIndex:2] intValue] withAlgo:[p objectAtIndex:0]] base64EncodedString];
     if ([encoded_hash isEqualToString:[salt_hash substringFromIndex:salt_len]]) {
         return YES;
