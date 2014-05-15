@@ -9,9 +9,10 @@
 #import "PBKDF2.h"
 #import "Base64.h"
 
-NSString* const kSHA256 = @"sha256";
-NSString* const kSHA512 = @"sha512";
+NSString* const kSHA256 = @"sh2a8";
+NSString* const kSHA512 = @"sh2a9";
 const int DEFAULT_SALT_LENGTH = 20;
+static NSString* delimiter = @"$";
 
 @implementation PBKDF2
 
@@ -31,7 +32,7 @@ const int DEFAULT_SALT_LENGTH = 20;
 {
     NSString *s = [self rand_str:sl];
     NSData *hash_data = [self pbkdf2:password salt:s count:c kLen:l withAlgo:algo];
-    return [NSString stringWithFormat:@"%@:%02d:%02d:%@%@", algo, c/1000, l, s, [hash_data base64EncodedString]];
+    return [NSString stringWithFormat:@"%@%@%02d%@%02d%@%@%@", algo, delimiter, c/1000, delimiter, l, delimiter, s, [hash_data base64EncodedString]];
 }
 
 + (NSString *)pass_hash:(NSString *) password length:(int) l count:(int) c saltLength:(int)sl;
@@ -61,7 +62,7 @@ const int DEFAULT_SALT_LENGTH = 20;
 
 + (BOOL)pass_verify:(NSString *) password hash:(NSString *) h
 {
-    NSArray *p = [h componentsSeparatedByString:@":"];
+    NSArray *p = [h componentsSeparatedByString:delimiter];
     NSString *salt_hash = [p objectAtIndex:3];
     unsigned long salt_len = [salt_hash length] - (unsigned long)ceil([[p objectAtIndex:2] doubleValue]/3) * 4;
     NSString *encoded_hash = [[self pbkdf2:password salt:[salt_hash substringToIndex: salt_len] count:[[p objectAtIndex:1] intValue]*1000 kLen:[[p objectAtIndex:2] intValue] withAlgo:[p objectAtIndex:0]] base64EncodedString];
