@@ -8,7 +8,7 @@ const KEY_LENGTH = 32;
 const KEY_ALGO = "sha512";
 
 function rand_str($length) {
-    $s = 'abcdefghijklmnokprstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     $ret = '';
     $count = strlen($s);
     for ($i=0; $i<$length; $i++) {
