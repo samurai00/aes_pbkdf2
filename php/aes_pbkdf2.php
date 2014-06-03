@@ -21,7 +21,7 @@ function aes_encrypt($data, $password) {
     // Add PKCS7 padding.
     $block = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
     if (($pad = $block - (strlen($data) % $block)) < $block) {
-      $data .= str_repeat(chr($pad), $pad);
+        $data .= str_repeat(chr($pad), $pad);
     }
     $salt = rand_str(SALT_LEN);
     $encrypted = mcrypt_encrypt(
@@ -29,7 +29,7 @@ function aes_encrypt($data, $password) {
         hash_pbkdf2(KEY_ALGO, $password, $salt, ITERATIONS, KEY_LENGTH, true),
         $data,
         MCRYPT_MODE_CBC,
-        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        str_repeat(chr(0), 16)
     );
     return $salt . base64_encode($encrypted);
 }
@@ -42,7 +42,7 @@ function aes_decrypt($data, $password) {
         hash_pbkdf2(KEY_ALGO, $password, $salt, ITERATIONS, KEY_LENGTH, true),
         base64_decode($data),
         MCRYPT_MODE_CBC,
-        "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        str_repeat(chr(0), 16)
     );
     // Strip padding out.
     $block = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
